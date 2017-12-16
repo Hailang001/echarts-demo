@@ -1,7 +1,7 @@
 <template>
   <div id="paper">
-    <div id="draw"></div>
-    <div id="draw2"></div>
+    <div id="draw3"></div>
+    <div id="draw4"></div>
     <div id="text"></div>
   </div>
 </template>
@@ -66,7 +66,7 @@
           let temp = [{
             name: this.nameList[i],
             type: 'line',
-            smooth: true, //  平滑曲线
+            step: 'start',
             symbol: 'circle', //  鼠标标记图形
             symbolSize: 5, //  鼠标标记图形大小
             showSymbol: false, //  显示标记点
@@ -102,32 +102,13 @@
         this.series = series
       },
       drawGraph () {
-        var myChart = echarts.init(document.getElementById('draw'))
-        var myChart2 = echarts.init(document.getElementById('draw2'))
-        /*
-        var mo = new MutationObserver(function (mutations) {
-          mutations.forEach(function (mutation) {
-            console.log(mutation.type)
-          })
-        })
-
-        var aa = document.getElementById('paper')
-
-        var option = {
-          attributes: true,
-          childList: true,
-          characterData: true
-        }
-        mo.observe(aa, option)
-        mo.disconnect()
-        */
-        window.onresize = function () {
+        var myChart = echarts.init(document.getElementById('draw3'))
+        var myChart2 = echarts.init(document.getElementById('draw4'))
+        window.addEventListener('resize', function () {
           myChart.resize()
           myChart2.resize()
-          let text = document.getElementById('text')
-          text.innerHTML = 'width = ' + window.innerWidth + 'height = ' + window.innerHeight
-        }
-       // window.onresize = myChart.resize
+        })
+        // window.onresize = myChart.resize
         myChart.showLoading()
         //  set
         try {
@@ -166,6 +147,10 @@
             xAxis: [{ //  X轴
               type: 'category',
               boundaryGap: false,
+              axisLabel: {
+                interval: 1,
+                rotate: 60
+              },
               axisLine: { //  轴线
                 lineStyle: {
                   color: '#75a09a'
@@ -206,71 +191,53 @@
         try {
           myChart2.setOption({
             //  option的配置开始
-            title: { //  标题
-              text: '这是标题',
-              padding: [15, 5],
-              x: 'center',
-              textStyle: {
-                fontWeight: 600,
-                fontSize: 16,
-                color: '#0f0f0f'
-              }
+            title: {
+              text: 'Step Line'
             },
-            tooltip: { //  提示
-              trigger: 'axis',
-              axisPointer: {
-                lineStyle: {
-                  color: '#57617B'
-                }
-              },
-              textStyle: {
-                fontWeight: 200,
-                fontSize: 8,
-                color: '#fff'
-              }
+            tooltip: {
+              trigger: 'axis'
             },
-            legend: this.legend,
-            grid: { //  绘制位置
-              left: '10%',
-              right: '15%',
-              bottom: '20%',
+            legend: {
+              data: ['Step Start', 'Step Middle', 'Step End']
+            },
+            grid: {
+              left: '3%',
+              right: '4%',
+              bottom: '3%',
               containLabel: true
             },
-            xAxis: [{ //  X轴
-              type: 'category',
-              boundaryGap: false,
-              axisLine: { //  轴线
-                lineStyle: {
-                  color: '#75a09a'
-                }
-              },
-              data: ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日']
-            }],
-            yAxis: [{ //  Y轴
-              type: 'value',
-              name: '%',
-              axisTick: {
-                show: false
-              },
-              axisLine: {  //  轴线
-                lineStyle: {
-                  color: '#75a09a'
-                }
-              },
-              axisLabel: { //  文字距离Y轴
-                margin: 10,
-                textStyle: {
-                  fontSize: 14
-                }
-              },
-              splitLine: { //  栅格线
-                lineStyle: {
-                  color: '#e9e8e8'
-                }
+            toolbox: {
+              feature: {
+                saveAsImage: {}
               }
-            }],
-            //  系列配置
-            series: this.series
+            },
+            xAxis: {
+              type: 'category',
+              data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+            },
+            yAxis: {
+              type: 'value'
+            },
+            series: [
+              {
+                name: 'Step Start',
+                type: 'line',
+                step: 'start',
+                data: [120, 132, 101, 134, 90, 230, 210]
+              },
+              {
+                name: 'Step Middle',
+                type: 'line',
+                step: 'middle',
+                data: [220, 282, 201, 234, 290, 430, 410]
+              },
+              {
+                name: 'Step End',
+                type: 'line',
+                step: 'end',
+                data: [450, 432, 401, 454, 590, 530, 510]
+              }
+            ]
             // 以上为option的配置结束
           })
         } catch (e) {
@@ -287,14 +254,14 @@
   }
 </script>
 <style scoped>
-  #draw{
+  #draw3{
     width: 46%;
     height:300px;
     margin: 0 auto;
     border: solid 1px gray;
     float: left;
   }
-  #draw2{
+  #draw4{
     width: 46%;
     height:300px;
     margin: 0 auto;

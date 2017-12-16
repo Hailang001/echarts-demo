@@ -1,8 +1,7 @@
 <template>
   <div id="paper">
-    <div id="draw"></div>
-    <div id="draw2"></div>
-    <div id="text"></div>
+    <div id="draw5"></div>
+    <div id="draw6"></div>
   </div>
 </template>
 <script type="text/ecmascript-6">
@@ -33,6 +32,7 @@
           [70, 50, 70, 50, 70, 60, 80]
         ],
         nameList: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'],
+        time: ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'],
         series: [],
         legend: []
       }
@@ -66,7 +66,7 @@
           let temp = [{
             name: this.nameList[i],
             type: 'line',
-            smooth: true, //  平滑曲线
+            step: 'start',
             symbol: 'circle', //  鼠标标记图形
             symbolSize: 5, //  鼠标标记图形大小
             showSymbol: false, //  显示标记点
@@ -101,40 +101,16 @@
         }
         this.series = series
       },
-      drawGraph () {
-        var myChart = echarts.init(document.getElementById('draw'))
-        var myChart2 = echarts.init(document.getElementById('draw2'))
-        /*
-        var mo = new MutationObserver(function (mutations) {
-          mutations.forEach(function (mutation) {
-            console.log(mutation.type)
-          })
+      drawGraph (param) {
+        window.addEventListener('resize', function () {
+          param.chart.resize()
         })
-
-        var aa = document.getElementById('paper')
-
-        var option = {
-          attributes: true,
-          childList: true,
-          characterData: true
-        }
-        mo.observe(aa, option)
-        mo.disconnect()
-        */
-        window.onresize = function () {
-          myChart.resize()
-          myChart2.resize()
-          let text = document.getElementById('text')
-          text.innerHTML = 'width = ' + window.innerWidth + 'height = ' + window.innerHeight
-        }
-       // window.onresize = myChart.resize
-        myChart.showLoading()
-        //  set
+        param.chart.showLoading()
         try {
-          myChart.setOption({
+          param.chart.setOption({
             //  option的配置开始
             title: { //  标题
-              text: '这是标题',
+              text: param.title,
               padding: [15, 5],
               x: 'center',
               textStyle: {
@@ -156,7 +132,7 @@
                 color: '#fff'
               }
             },
-            legend: this.legend,
+            legend: param.legend,
             grid: { //  绘制位置
               left: '10%',
               right: '15%',
@@ -166,16 +142,20 @@
             xAxis: [{ //  X轴
               type: 'category',
               boundaryGap: false,
+              axisLabel: {
+                interval: 1,
+                rotate: 60
+              },
               axisLine: { //  轴线
                 lineStyle: {
                   color: '#75a09a'
                 }
               },
-              data: ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日']
+              data: param.time
             }],
             yAxis: [{ //  Y轴
               type: 'value',
-              name: '%',
+              name: param.unit,
               axisTick: {
                 show: false
               },
@@ -197,111 +177,52 @@
               }
             }],
             //  系列配置
-            series: this.series
+            series: param.series
             // 以上为option的配置结束
           })
         } catch (e) {
-          console.log(e + '报错啦')
+          console.log(e + param.title + '报错啦')
         }
-        try {
-          myChart2.setOption({
-            //  option的配置开始
-            title: { //  标题
-              text: '这是标题',
-              padding: [15, 5],
-              x: 'center',
-              textStyle: {
-                fontWeight: 600,
-                fontSize: 16,
-                color: '#0f0f0f'
-              }
-            },
-            tooltip: { //  提示
-              trigger: 'axis',
-              axisPointer: {
-                lineStyle: {
-                  color: '#57617B'
-                }
-              },
-              textStyle: {
-                fontWeight: 200,
-                fontSize: 8,
-                color: '#fff'
-              }
-            },
-            legend: this.legend,
-            grid: { //  绘制位置
-              left: '10%',
-              right: '15%',
-              bottom: '20%',
-              containLabel: true
-            },
-            xAxis: [{ //  X轴
-              type: 'category',
-              boundaryGap: false,
-              axisLine: { //  轴线
-                lineStyle: {
-                  color: '#75a09a'
-                }
-              },
-              data: ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日']
-            }],
-            yAxis: [{ //  Y轴
-              type: 'value',
-              name: '%',
-              axisTick: {
-                show: false
-              },
-              axisLine: {  //  轴线
-                lineStyle: {
-                  color: '#75a09a'
-                }
-              },
-              axisLabel: { //  文字距离Y轴
-                margin: 10,
-                textStyle: {
-                  fontSize: 14
-                }
-              },
-              splitLine: { //  栅格线
-                lineStyle: {
-                  color: '#e9e8e8'
-                }
-              }
-            }],
-            //  系列配置
-            series: this.series
-            // 以上为option的配置结束
-          })
-        } catch (e) {
-          console.log(e + '报错啦')
-        }
-        myChart.hideLoading()
+        param.chart.hideLoading()
       }
     },
     mounted () {
       this.getSeries()
       this.getLegend()
-      this.drawGraph()
+      let param = {
+        chart: echarts.init(document.getElementById('draw5')),
+        title: 'ECHARTS-DEMO',
+        legend: this.legend,
+        time: this.time,
+        unit: '%',
+        series: this.series
+      }
+      this.drawGraph(param)
+      let param2 = {
+        chart: echarts.init(document.getElementById('draw6')),
+        title: 'ECHARTS-DEMO-2',
+        legend: this.legend,
+        time: this.time,
+        unit: '%',
+        series: this.series
+      }
+      this.drawGraph(param2)
     }
   }
 </script>
 <style scoped>
-  #draw{
+  #draw5{
     width: 46%;
     height:300px;
     margin: 0 auto;
     border: solid 1px gray;
     float: left;
   }
-  #draw2{
+  #draw6{
     width: 46%;
     height:300px;
     margin: 0 auto;
     border: solid 1px gray;
     float: right;
-  }
-  #text{
-    clear: both;
   }
 </style>
